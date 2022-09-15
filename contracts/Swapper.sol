@@ -6,22 +6,20 @@ import { UniswapV2Library } from "./libraries/UniswapV2Library.sol";
 import { IUniswapV2Pair } from "./interfaces/IPair.sol";
 
 contract Swapper {
-  error NotOwner();
   error Expired();
   error InsufficientOutputAmount();
-  error InsufficientInputAmount();
   error TokenTransferFailed();
   error IdenticalAddresses();
   error ZeroAddress();
   error CallError();
   error InsufficientLiquidity();
 
-  address public owner;
+  address public immutable owner;
 
-  address public recipient; // (?)
+  address public immutable recipient; // (?)
 
-  address public factory;
-  address public exactToken;
+  address public immutable factory;
+  address public immutable exactToken;
 
   constructor(
     address _factory,
@@ -38,9 +36,7 @@ contract Swapper {
     assembly {
       // 0x00 - owner
       if iszero(eq(caller(), sload(0x00))) {
-        // 0x30cd7471 == bytes4(keccak256("NotOwner()"))
-        mstore(0x00, shl(0xe0, 0x30cd7471))
-        revert(0x00, 0x04)
+        revert(0x00, 0x00)
       }
     }
 
@@ -70,12 +66,9 @@ contract Swapper {
     uint256 deadline
   ) external {
     if (deadline < block.timestamp) {
-      revert Expired();
-    }
-    if (amountIn == 0) {
-      // 0x098fb561 == bytes4(keccak256("InsufficientInputAmount()"))
+      // 0x203d82d8 == bytes4(keccak256("Expired()"))
       assembly {
-        mstore(0x00, shl(0xe0, 0x098fb561))
+        mstore(0x00, shl(0xe0, 0x203d82d8))
         revert(0x00, 0x04)
       }
     }
