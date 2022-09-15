@@ -26,6 +26,7 @@ const config: HardhatUserConfig = {
           process.env.ETHEREUM_MAINNET_URL !== undefined
             ? process.env.ETHEREUM_MAINNET_URL
             : "",
+        blockNumber: 15540990,
       },
     },
     ethereum: {
@@ -34,9 +35,7 @@ const config: HardhatUserConfig = {
           ? process.env.ETHEREUM_MAINNET_URL
           : "",
       accounts:
-        process.env.PRIVATE_KEY !== undefined
-          ? [process.env.PRIVATE_KEY]
-          : [""],
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
 
     goerli_testnet: {
@@ -45,9 +44,7 @@ const config: HardhatUserConfig = {
           ? process.env.GOERLI_TESTNET_URL
           : "",
       accounts:
-        process.env.PRIVATE_KEY !== undefined
-          ? [process.env.PRIVATE_KEY]
-          : [""],
+        process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
   },
 
