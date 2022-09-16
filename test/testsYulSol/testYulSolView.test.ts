@@ -4,9 +4,9 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { defaultAbiCoder } from "ethers/lib/utils";
 
-import { Test__factory } from "../typechain-types";
+import { TestView__factory } from "../../typechain-types";
 
-// solc --strict-assembly --optimize --optimize-runs 1000 contracts/testYulSol/Test.yul
+// solc --strict-assembly --optimize --optimize-runs 1000 contracts/testYulSol/TestView.yul
 const bytecode =
   "603a806013600039336000600201526000f3fe337f000000000000000000000000000000000000000000000000000000000000000014602a57600080fd5b6020356000350160005260206000f3";
 
@@ -23,8 +23,8 @@ describe("", () => {
     const ContrFact = new ethers.ContractFactory([], bytecode, owner);
     const yulContract = await ContrFact.deploy();
 
-    // solidity contract => 117993 deploy gas
-    await new Test__factory(owner).deploy();
+    // solidity contract => 103405 deploy gas
+    await new TestView__factory(owner).deploy();
 
     const data = defaultAbiCoder.encode(["uint256", "uint256"], [42, 42]);
     console.log(

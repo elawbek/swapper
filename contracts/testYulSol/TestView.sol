@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-contract Test {
+contract TestView {
   address private immutable _owner;
 
   constructor() {
@@ -10,7 +10,9 @@ contract Test {
 
   function add(uint256 a, uint256 b) external view returns (uint256) {
     if (msg.sender == _owner) {
-      return a + b;
+      unchecked {
+        return a + b;
+      }
     }
 
     revert();
