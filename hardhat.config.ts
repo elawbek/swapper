@@ -9,7 +9,7 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       {
-        version: "0.8.16",
+        version: "0.8.17",
         settings: {
           optimizer: {
             enabled: true,
@@ -20,15 +20,15 @@ const config: HardhatUserConfig = {
     ],
   },
   networks: {
-    hardhat: {
-      forking: {
-        url:
-          process.env.ETHEREUM_MAINNET_URL !== undefined
-            ? process.env.ETHEREUM_MAINNET_URL
-            : "",
-        blockNumber: 15540990,
-      },
-    },
+    // hardhat: {
+    //   forking: {
+    //     url:
+    //       process.env.ETHEREUM_MAINNET_URL !== undefined
+    //         ? process.env.ETHEREUM_MAINNET_URL
+    //         : "",
+    //     blockNumber: 15547500,
+    //   },
+    // },
     ethereum: {
       url:
         process.env.ETHEREUM_MAINNET_URL !== undefined
