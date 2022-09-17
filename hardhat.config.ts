@@ -20,15 +20,15 @@ const config: HardhatUserConfig = {
     ],
   },
   networks: {
-    // hardhat: {
-    //   forking: {
-    //     url:
-    //       process.env.ETHEREUM_MAINNET_URL !== undefined
-    //         ? process.env.ETHEREUM_MAINNET_URL
-    //         : "",
-    //     blockNumber: 15547500,
-    //   },
-    // },
+    hardhat: {
+      forking: {
+        url:
+          process.env.ETHEREUM_MAINNET_URL !== undefined
+            ? process.env.ETHEREUM_MAINNET_URL
+            : "",
+        blockNumber: 15547500,
+      },
+    },
     ethereum: {
       url:
         process.env.ETHEREUM_MAINNET_URL !== undefined
@@ -49,7 +49,7 @@ const config: HardhatUserConfig = {
   },
 
   gasReporter: {
-    enabled: true,
+    enabled: false,
     currency: "",
   },
 

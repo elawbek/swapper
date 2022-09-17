@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[` gas checker change storage gas solidity contract 1`] = `43732`;
+
+exports[` gas checker change storage gas yul contract 1`] = `43445`;
+
+exports[` gas checker deploy solidity contract gas 1`] = `108573`;
+
+exports[` gas checker deploy yul contract gas 1`] = `69292`;
