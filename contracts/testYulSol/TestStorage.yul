@@ -1,7 +1,7 @@
 object "TestStorage" {
   code {
     codecopy(returndatasize(), dataoffset("runtime"), datasize("runtime"))
-    setimmutable(0x00, "owner", caller())
+    setimmutable(returndatasize(), "owner", caller())
     return(returndatasize(), datasize("runtime"))
   }
 
@@ -10,8 +10,11 @@ object "TestStorage" {
       if eq(loadimmutable("owner"), caller()) {
         switch calldatasize()
 
-        case 0x40 {
-          sstore(returndatasize(), add(calldataload(returndatasize()), calldataload(0x20)))
+        case 0x02 {
+          sstore(
+            returndatasize(),
+            add(shr(0xf8, calldataload(0x00)), shr(0xf8, calldataload(0x01)))
+          )
         }
 
         case 0x01 {

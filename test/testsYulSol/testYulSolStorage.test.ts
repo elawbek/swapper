@@ -2,14 +2,14 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { defaultAbiCoder } from "ethers/lib/utils";
+// import { defaultAbiCoder } from "ethers/lib/utils";
 import snapshotGasCost from "../snapshots";
 
 import { TestStorage__factory } from "../../typechain-types";
 
 // solc --strict-assembly --optimize --optimize-runs 1000 contracts/testYulSol/TestStorage.yul
 const bytecode =
-  "604c8060113d39336000600201523df3fe337f000000000000000000000000000000000000000000000000000000000000000014602757005b3680604014604157600114603757005b6000543d5260203df35b506020353d35013d5500";
+  "60538060103d39333d600201523df3fe337f000000000000000000000000000000000000000000000000000000000000000014602757005b3680600214604157600114603757005b6000543d5260203df35b5060013560f81c60003560f81c013d5500";
 
 // hh node
 // rm -rf test/testsYulSol/__* && hh test test/testsYulSol/testYulSolStorage.test.ts --network localhost
@@ -31,7 +31,8 @@ describe("", () => {
     const ContrFact = new ethers.ContractFactory([], bytecode, owner);
     const yulContract = await ContrFact.deploy();
 
-    const data = defaultAbiCoder.encode(["uint256", "uint256"], [42, 42]);
+    // const data = defaultAbiCoder.encode(["uint256", "uint256"], [42, 42]);
+    const data = `0x${(42).toString(16) + (42).toString(16)}`;
 
     await owner.sendTransaction({
       to: yulContract.address,
@@ -65,7 +66,8 @@ describe("", () => {
       const ContrFact = new ethers.ContractFactory([], bytecode, owner);
       const yulContract = await ContrFact.deploy();
 
-      const data = defaultAbiCoder.encode(["uint256", "uint256"], [42, 42]);
+      // const data = defaultAbiCoder.encode(["uint256", "uint256"], [42, 42]);
+      const data = `0x${(42).toString(16) + (42).toString(16)}`;
 
       await snapshotGasCost(
         owner.sendTransaction({
