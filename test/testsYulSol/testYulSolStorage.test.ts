@@ -2,8 +2,9 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-// import { defaultAbiCoder } from "ethers/lib/utils";
 import snapshotGasCost from "../snapshots";
+
+import { solidityPack } from "ethers/lib/utils";
 
 import { TestStorage__factory } from "../../typechain-types";
 
@@ -31,8 +32,7 @@ describe("", () => {
     const ContrFact = new ethers.ContractFactory([], bytecode, owner);
     const yulContract = await ContrFact.deploy();
 
-    // const data = defaultAbiCoder.encode(["uint256", "uint256"], [42, 42]);
-    const data = `0x${(42).toString(16) + (42).toString(16)}`;
+    const data = solidityPack(["uint8", "uint8"], [42, 42]);
 
     await owner.sendTransaction({
       to: yulContract.address,
@@ -66,8 +66,7 @@ describe("", () => {
       const ContrFact = new ethers.ContractFactory([], bytecode, owner);
       const yulContract = await ContrFact.deploy();
 
-      // const data = defaultAbiCoder.encode(["uint256", "uint256"], [42, 42]);
-      const data = `0x${(42).toString(16) + (42).toString(16)}`;
+      const data = solidityPack(["uint8", "uint8"], [42, 42]);
 
       await snapshotGasCost(
         owner.sendTransaction({

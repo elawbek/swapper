@@ -18,8 +18,8 @@ object "TestStorage" {
         }
 
         case 0x01 {
-          mstore(returndatasize(), sload(0x00))
-          return(returndatasize(), 0x20)
+            mstore(returndatasize(), sload(0x00))
+            return(returndatasize(), 0x20)
         }
       }
     }
