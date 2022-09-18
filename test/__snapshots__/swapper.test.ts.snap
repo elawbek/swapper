@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[` test gas deploy 1`] = `115143`;
+
+exports[` test gas swap 1`] = `63173`;
+
+exports[` test gas swap 2`] = `46097`;
+
+exports[` test gas swap 3`] = `113262`;
+
+exports[` test gas swap 4`] = `46097`;
+
+exports[` test gas swap 5`] = `113262`;

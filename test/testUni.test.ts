@@ -8,15 +8,16 @@ import {
 } from "@nomicfoundation/hardhat-network-helpers";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { constants } from "ethers";
 
-import snapshotGasCost from "../snapshots";
+import snapshotGasCost from "./snapshots";
 
 import {
   IRouter,
   IRouter__factory,
   IERC20,
   IERC20__factory,
-} from "../../typechain-types";
+} from "../typechain-types";
 
 const USDT_WHALE = "0x5041ed759Dd4aFc3a72b8192C143F72f4724081A";
 const UNI_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
@@ -33,11 +34,7 @@ async function deployFixture() {
   const usdc = IERC20__factory.connect(USDC_ADDR, owner);
   const router = IRouter__factory.connect(UNI_ROUTER, owner);
 
-  await usdt
-    .connect(whale)
-    .transfer(owner.address, ethers.BigNumber.from(300).mul(10 ** 6));
-
-  return { owner, alice, usdc, usdt, router };
+  return { owner, alice, usdc, usdt, router, whale };
 }
 
 // hh node
@@ -45,36 +42,23 @@ async function deployFixture() {
 describe("", () => {
   let owner: SignerWithAddress;
   let alice: SignerWithAddress;
+  let whale: SignerWithAddress;
 
   let usdc: IERC20;
   let usdt: IERC20;
   let router: IRouter;
 
   beforeEach(async () => {
-    ({ owner, alice, usdc, usdt, router } = await loadFixture(deployFixture));
-  });
-
-  it("swap gas 1", async () => {
-    await snapshotGasCost(
-      usdt
-        .connect(owner)
-        .approve(UNI_ROUTER, ethers.BigNumber.from(100).mul(10 ** 6))
-    );
-
-    await snapshotGasCost(
-      router
-        .connect(owner)
-        .swapExactTokensForTokens(
-          ethers.BigNumber.from(100).mul(10 ** 6),
-          0,
-          [USDT_ADDR, USDC_ADDR],
-          alice.address,
-          (await time.latest()) + 1200
-        )
-    );
+    ({ owner, alice, usdc, usdt, router, whale } = await loadFixture(
+      deployFixture
+    ));
   });
 
   it("swap usdt -> usdc", async () => {
+    await usdt
+      .connect(whale)
+      .transfer(owner.address, ethers.BigNumber.from(100).mul(10 ** 6));
+
     const amountsOut = await router.getAmountsOut(
       ethers.BigNumber.from(100).mul(10 ** 6),
       [USDT_ADDR, USDC_ADDR]
@@ -97,11 +81,33 @@ describe("", () => {
     ).to.changeTokenBalance(usdc, alice, amountsOut[1]);
   });
 
-  it("swap gas 2", async () => {
+  it("swap gas", async () => {
+    await snapshotGasCost(
+      usdt.connect(owner).approve(UNI_ROUTER, constants.MaxUint256)
+    );
+
     await snapshotGasCost(
       usdt
+        .connect(whale)
+        .transfer(owner.address, ethers.BigNumber.from(100).mul(10 ** 6))
+    );
+
+    await snapshotGasCost(
+      router
         .connect(owner)
-        .approve(UNI_ROUTER, ethers.BigNumber.from(100).mul(10 ** 6))
+        .swapExactTokensForTokens(
+          ethers.BigNumber.from(100).mul(10 ** 6),
+          0,
+          [USDT_ADDR, USDC_ADDR],
+          alice.address,
+          (await time.latest()) + 1200
+        )
+    );
+
+    await snapshotGasCost(
+      usdt
+        .connect(whale)
+        .transfer(owner.address, ethers.BigNumber.from(100).mul(10 ** 6))
     );
 
     await snapshotGasCost(

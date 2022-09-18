@@ -1,4 +1,4 @@
-object "TestStorage" {
+object "Swapper" {
   code {
     codecopy(
       callvalue(), // 0x00
@@ -32,10 +32,17 @@ object "TestStorage" {
 
   object "runtime" {
     code {
+      if gt(callvalue(), returndatasize()) {
+        revert(
+          returndatasize(), // 0x00
+          returndatasize() // 0x00
+        )
+      }
+
       if eq(loadimmutable("owner"), caller()) {
         switch calldatasize()
 
-        case 0x39 { // swap
+        case 0x35 { // swap
           // timestamp check
           if lt(shr(0xe0, calldataload(callvalue())), timestamp()) {
             revert(
@@ -60,7 +67,7 @@ object "TestStorage" {
 
           mstore(
             0x24,
-            shr(0x80, calldataload(0x18)) // amountIn
+            shr(0x90, calldataload(0x18)) // amountIn
           )
 
           if iszero(
@@ -88,7 +95,7 @@ object "TestStorage" {
             shl(0xe0, 0x022c0d9f) // swap(uint256,uint256,address,bytes)
           )
 
-          let tokenOut := shr(0xf8, calldataload(0x38))
+          let tokenOut := gt(calldataload(0x34), callvalue())
 
           mstore(
             0x04, // func signature 0x04 bytes
@@ -137,7 +144,7 @@ object "TestStorage" {
         function token0Out(a) -> r {
           switch a
           case 0x00 {
-            r := shr(0x80, calldataload(0x28))
+            r := shr(0x90, calldataload(0x26))
           }
           default {
             r := callvalue()
@@ -150,7 +157,7 @@ object "TestStorage" {
             r := callvalue()
           }
           default {
-            r := shr(0x80, calldataload(0x28))
+            r := shr(0x90, calldataload(0x26))
           }
         }
       }

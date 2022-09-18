@@ -22,7 +22,7 @@ import {
 
 // solc --strict-assembly --optimize --optimize-runs 1000 contracts/Swapper.yul
 const bytecode =
-  "61011680610046343933346002015273dac17f958d2ee523a2206206994597c13d831ec734606301527370997970c51812dc3a010c7d01b50e0d17dc79c83460b2015234f3fe337f000000000000000000000000000000000000000000000000000000000000000014610029575b005b3660391461003357005b42343560e01c106100ee5760043560601c63a9059cbb60e01b34528060045260183560801c6024523434604434347f00000000000000000000000000000000000000000000000000000000000000005af1156100ee5763022c0d9f60e01b34526100ad60383560f81c6100a5816100f2565b600452610104565b6024527f0000000000000000000000000000000000000000000000000000000000000000604452608060645234608452349060a43491349034905af1610027575b3434fd5b156100fb573490565b60283560801c90565b156101125760283560801c90565b349056";
+  "61012080610046343933346009015273dac17f958d2ee523a2206206994597c13d831ec734606a01527370997970c51812dc3a010c7d01b50e0d17dc79c83460b8015234f3fe3d34116100f857337f000000000000000000000000000000000000000000000000000000000000000014610030575b005b3660351461003a57005b42343560e01c106100f45760043560601c63a9059cbb60e01b34528060045260183560901c6024523434604434347f00000000000000000000000000000000000000000000000000000000000000005af1156100f45763022c0d9f60e01b34526100b334603435116100ab816100fc565b60045261010e565b6024527f0000000000000000000000000000000000000000000000000000000000000000604452608060645234608452349060a43491349034905af161002e575b3434fd5b3d3dfd5b15610105573490565b60263560901c90565b1561011c5760263560901c90565b349056";
 
 const USDT_WHALE = "0x5041ed759Dd4aFc3a72b8192C143F72f4724081A";
 const USDT_ADDR = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
@@ -45,9 +45,12 @@ async function deployFixture() {
 
   await usdt
     .connect(whale)
-    .transfer(owner.address, ethers.BigNumber.from(100).mul(10 ** 6));
+    .transfer(owner.address, ethers.BigNumber.from(1000).mul(10 ** 6));
 
-  return { owner, alice, usdc, usdt, router, pair };
+  const ContrFactory = new ethers.ContractFactory([], bytecode, owner);
+  const swapYulContract = await ContrFactory.deploy();
+
+  return { owner, alice, usdc, usdt, router, pair, swapYulContract, whale };
 }
 
 // hh node
@@ -55,16 +58,17 @@ async function deployFixture() {
 describe("", () => {
   let owner: SignerWithAddress;
   let alice: SignerWithAddress;
+  let whale: SignerWithAddress;
 
   let usdc: IERC20;
   let usdt: IERC20;
   let router: IRouter;
   let pair: IUniswapV2Pair;
+  let swapYulContract: any;
 
   beforeEach(async () => {
-    ({ alice, owner, usdc, usdt, router, pair } = await loadFixture(
-      deployFixture
-    ));
+    ({ alice, owner, usdc, usdt, router, pair, swapYulContract, whale } =
+      await loadFixture(deployFixture));
   });
 
   it("test swap", async () => {
@@ -73,11 +77,8 @@ describe("", () => {
       [USDT_ADDR, USDC_ADDR]
     );
 
-    const ContrFactory = new ethers.ContractFactory([], bytecode, owner);
-    const swapYulContract = await ContrFactory.deploy();
-
     await usdt
-      .connect(owner)
+      .connect(whale)
       .transfer(
         swapYulContract.address,
         ethers.BigNumber.from(100).mul(10 ** 6)
@@ -86,7 +87,7 @@ describe("", () => {
     const deadline = (await time.latest()) + 1200;
 
     const data = solidityPack(
-      ["uint32", "address", "uint128", "uint128", "bool"],
+      ["uint32", "address", "uint112", "uint112", "bool"],
       [
         deadline,
         pair.address,
@@ -96,49 +97,102 @@ describe("", () => {
       ]
     );
 
-    await owner.sendTransaction({
-      to: swapYulContract.address,
-      data,
-      gasLimit: 1000000,
-      accessList: [
-        [
-          pair.address,
+    await expect(() =>
+      owner.sendTransaction({
+        to: swapYulContract.address,
+        data,
+        gasLimit: 1000000,
+        accessList: [
           [
-            "0x0000000000000000000000000000000000000000000000000000000000000006",
-            "0x0000000000000000000000000000000000000000000000000000000000000007",
-            "0x0000000000000000000000000000000000000000000000000000000000000008",
-            "0x0000000000000000000000000000000000000000000000000000000000000009",
-            "0x000000000000000000000000000000000000000000000000000000000000000a",
-            "0x000000000000000000000000000000000000000000000000000000000000000c",
+            pair.address,
+            [
+              "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "0x0000000000000000000000000000000000000000000000000000000000000007",
+              "0x0000000000000000000000000000000000000000000000000000000000000008",
+              "0x0000000000000000000000000000000000000000000000000000000000000009",
+              "0x000000000000000000000000000000000000000000000000000000000000000a",
+              "0x000000000000000000000000000000000000000000000000000000000000000c",
+            ],
           ],
         ],
-      ],
-    });
-
-    console.log(await usdc.balanceOf(alice.address));
-    console.log(await usdt.balanceOf(swapYulContract.address));
+      })
+    ).to.changeTokenBalance(usdc, alice, amountsOut[1]);
   });
 
-  xit("test gas", async () => {
+  it("test gas deploy", async () => {
     const ContrFactory = new ethers.ContractFactory([], bytecode, owner);
-    const swapYulContract = await ContrFactory.deploy();
+    await snapshotGasCost(ContrFactory.deploy());
+  });
 
-    await usdt
-      .connect(owner)
-      .approve(
-        swapYulContract.address,
-        ethers.BigNumber.from(100).mul(10 ** 6)
-      );
+  it("test gas swap", async () => {
+    await snapshotGasCost(
+      usdt.connect(whale).transfer(swapYulContract.address, 1)
+    );
+
+    await snapshotGasCost(
+      usdt
+        .connect(whale)
+        .transfer(
+          swapYulContract.address,
+          ethers.BigNumber.from(100).mul(10 ** 6)
+        )
+    );
 
     const deadline = (await time.latest()) + 1200;
 
-    const amountsOut = await router.getAmountsOut(
+    let amountsOut = await router.getAmountsOut(
       ethers.BigNumber.from(100).mul(10 ** 6),
       [USDT_ADDR, USDC_ADDR]
     );
 
-    const data = solidityPack(
-      ["uint32", "address", "uint128", "uint128", "bool"],
+    let data = solidityPack(
+      ["uint32", "address", "uint112", "uint112", "bool"],
+      [
+        deadline,
+        pair.address,
+        amountsOut[0],
+        amountsOut[1],
+        (await pair.token0()) === USDT_ADDR,
+      ]
+    );
+
+    await snapshotGasCost(
+      owner.sendTransaction({
+        to: swapYulContract.address,
+        data,
+        gasLimit: 1000000,
+        accessList: [
+          [
+            pair.address,
+            [
+              "0x0000000000000000000000000000000000000000000000000000000000000006",
+              "0x0000000000000000000000000000000000000000000000000000000000000007",
+              "0x0000000000000000000000000000000000000000000000000000000000000008",
+              "0x0000000000000000000000000000000000000000000000000000000000000009",
+              "0x000000000000000000000000000000000000000000000000000000000000000a",
+              "0x000000000000000000000000000000000000000000000000000000000000000c",
+            ],
+          ],
+        ],
+      })
+    );
+
+    await snapshotGasCost(
+      usdt
+        .connect(whale)
+        .transfer(
+          swapYulContract.address,
+          ethers.BigNumber.from(100).mul(10 ** 6)
+        )
+    );
+
+    amountsOut = await router.getAmountsOut(
+      ethers.BigNumber.from(100).mul(10 ** 6),
+      [USDT_ADDR, USDC_ADDR]
+    );
+
+    data = solidityPack(
+      ["uint32", "address", "uint112", "uint112", "bool"],
       [
         deadline,
         pair.address,
