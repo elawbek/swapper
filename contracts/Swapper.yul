@@ -14,8 +14,8 @@ object "Swapper" {
 
     setimmutable(
       callvalue(), // 0x00
-      "expectToken", // name
-      0xdAC17F958D2ee523a2206206994597C13D831ec7 // expectToken
+      "fromToken", // name
+      0xdAC17F958D2ee523a2206206994597C13D831ec7 // fromToken
     )
 
     setimmutable(
@@ -73,7 +73,7 @@ object "Swapper" {
           if iszero(
               call(
                 gas(), // gas
-                loadimmutable("expectToken"),
+                loadimmutable("fromToken"),
                 callvalue(), // wei 0x00
                 callvalue(), // in pos 0x00
                 0x44, // len
@@ -131,6 +131,43 @@ object "Swapper" {
                 0xa4, // len
                 callvalue(), // out pos
                 callvalue() // out size
+              )
+            ) {
+            revert(
+              callvalue(), // 0x00
+              callvalue() // 0x00
+            )
+          }
+          // =============================================
+        }
+
+        case 0x0e {
+          // =============================================
+          // transfer token to owner
+          mstore(
+            callvalue(), // 0x00
+            shl(0xe0, 0xa9059cbb) // transfer(address,uint256)
+          )
+
+          mstore(
+            0x04, // func signature 0x04 bytes
+            caller()
+          )
+
+          mstore(
+            0x24,
+            shr(0x90, calldataload(callvalue())) // amountIn
+          )
+
+          if iszero(
+              call(
+                gas(), // gas
+                loadimmutable("fromToken"),
+                callvalue(), // wei 0x00
+                callvalue(), // in pos 0x00
+                0x44, // len
+                callvalue(), // out pos 0x00
+                callvalue() // out size 0x00
               )
             ) {
             revert(
