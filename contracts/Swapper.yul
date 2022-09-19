@@ -21,7 +21,7 @@ object "Swapper" {
     setimmutable(
       callvalue(), // 0x00
       "recipient", // name
-      0x70997970C51812dc3A010C7d01b50e0d17dc79C8 // afterswap recipient
+      0x70997970C51812dc3A010C7d01b50e0d17dc79C8 // afterswap recipient (must be replaced with the desired)
     )
 
     return(

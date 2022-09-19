@@ -47,15 +47,6 @@ const config: HardhatUserConfig = {
         process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
     },
   },
-
-  gasReporter: {
-    enabled: false,
-    currency: "",
-  },
-
-  etherscan: {
-    apiKey: process.env.SCAN_API_KEY,
-  },
 };
 
 export default config;
