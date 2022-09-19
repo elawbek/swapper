@@ -15,13 +15,13 @@ object "Swapper" {
     setimmutable(
       callvalue(), // 0x00
       "fromToken", // name
-      0xdAC17F958D2ee523a2206206994597C13D831ec7 // fromToken
+      0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 // fromToken WETH
     )
 
     setimmutable(
       callvalue(), // 0x00
       "recipient", // name
-      0x70997970C51812dc3A010C7d01b50e0d17dc79C8 // recipient
+      0x70997970C51812dc3A010C7d01b50e0d17dc79C8 // afterswap recipient
     )
 
     return(

@@ -1,11 +1,163 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[` swap gas 1`] = `48897`;
+exports[` swap gas 1`] = `46364`;
 
-exports[` swap gas 2`] = `46097`;
+exports[` swap gas 2`] = `34494`;
 
-exports[` swap gas 3`] = `124928`;
+exports[` swap gas 3`] = `116478`;
 
-exports[` swap gas 4`] = `46097`;
+exports[` swap gas 4`] = `34494`;
 
-exports[` swap gas 5`] = `124928`;
+exports[` swap gas 5`] = `99378`;
+
+exports[` swap gas 6`] = `34494`;
+
+exports[` swap gas 7`] = `113089`;
+
+exports[` swap gas 8`] = `34494`;
+
+exports[` swap gas 9`] = `113089`;
+
+exports[` swap gas 10`] = `34494`;
+
+exports[` swap gas 11`] = `115347`;
+
+exports[` swap gas 12`] = `34494`;
+
+exports[` swap gas 13`] = `98247`;
+
+exports[` swap gas 14`] = `34494`;
+
+exports[` swap gas 15`] = `127292`;
+
+exports[` swap gas 16`] = `34494`;
+
+exports[` swap gas 17`] = `110192`;
+
+exports[` swap gas 18`] = `34494`;
+
+exports[` swap gas 19`] = `119968`;
+
+exports[` swap gas 20`] = `34494`;
+
+exports[` swap gas 21`] = `102868`;
+
+exports[` swap gas 22`] = `34494`;
+
+exports[` swap gas 23`] = `145890`;
+
+exports[` swap gas 24`] = `34494`;
+
+exports[` swap gas 25`] = `128790`;
+
+exports[` swap gas 26`] = `34494`;
+
+exports[` swap gas 27`] = `121216`;
+
+exports[` swap gas 28`] = `34494`;
+
+exports[` swap gas 29`] = `104116`;
+
+exports[` swap gas 30`] = `34494`;
+
+exports[` swap gas 31`] = `115633`;
+
+exports[` swap gas 32`] = `34494`;
+
+exports[` swap gas 33`] = `98533`;
+
+exports[` swap gas 34`] = `34494`;
+
+exports[` swap gas 35`] = `115571`;
+
+exports[` swap gas 36`] = `34494`;
+
+exports[` swap gas 37`] = `98471`;
+
+exports[` swap gas 38`] = `34494`;
+
+exports[` swap gas 39`] = `115391`;
+
+exports[` swap gas 40`] = `34494`;
+
+exports[` swap gas 41`] = `98291`;
+
+exports[` swap gas 42`] = `34494`;
+
+exports[` swap gas 43`] = `118455`;
+
+exports[` swap gas 44`] = `34494`;
+
+exports[` swap gas 45`] = `101355`;
+
+exports[` swap gas 46`] = `34494`;
+
+exports[` swap gas 47`] = `123628`;
+
+exports[` swap gas 48`] = `34494`;
+
+exports[` swap gas 49`] = `106528`;
+
+exports[` swap gas 50`] = `34494`;
+
+exports[` swap gas 51`] = `115334`;
+
+exports[` swap gas 52`] = `34494`;
+
+exports[` swap gas 53`] = `98234`;
+
+exports[` swap gas 54`] = `34494`;
+
+exports[` swap gas 55`] = `119887`;
+
+exports[` swap gas 56`] = `34494`;
+
+exports[` swap gas 57`] = `102787`;
+
+exports[` swap gas 58`] = `34494`;
+
+exports[` swap gas 59`] = `115445`;
+
+exports[` swap gas 60`] = `34494`;
+
+exports[` swap gas 61`] = `98345`;
+
+exports[` swap gas 62`] = `34494`;
+
+exports[` swap gas 63`] = `115436`;
+
+exports[` swap gas 64`] = `34494`;
+
+exports[` swap gas 65`] = `98336`;
+
+exports[` swap gas 66`] = `34494`;
+
+exports[` swap gas 67`] = `193370`;
+
+exports[` swap gas 68`] = `34494`;
+
+exports[` swap gas 69`] = `176270`;
+
+exports[` swap gas 70`] = `34494`;
+
+exports[` swap gas 71`] = `122397`;
+
+exports[` swap gas 72`] = `34494`;
+
+exports[` swap gas 73`] = `105297`;
+
+exports[` swap gas 74`] = `34494`;
+
+exports[` swap gas 75`] = `115373`;
+
+exports[` swap gas 76`] = `34494`;
+
+exports[` swap gas 77`] = `98273`;
+
+exports[` swap gas 78`] = `34494`;
+
+exports[` swap gas 79`] = `125749`;
+
+exports[` swap gas 80`] = `34494`;
+
+exports[` swap gas 81`] = `108649`;

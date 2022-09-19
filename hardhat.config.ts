@@ -26,7 +26,7 @@ const config: HardhatUserConfig = {
           process.env.ETHEREUM_MAINNET_URL !== undefined
             ? process.env.ETHEREUM_MAINNET_URL
             : "",
-        blockNumber: 15547500,
+        blockNumber: 15568620,
       },
     },
     ethereum: {

@@ -9,117 +9,118 @@ import {
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { constants } from "ethers";
+import { parseEther } from "ethers/lib/utils";
 
 import snapshotGasCost from "./snapshots";
+import { UNI_ROUTER, WETH, WETH_WAHLE, tokens } from "./helper";
 
 import {
   IRouter,
   IRouter__factory,
   IERC20,
   IERC20__factory,
+  IERC20Metadata__factory,
 } from "../typechain-types";
-
-const USDT_WHALE = "0x5041ed759Dd4aFc3a72b8192C143F72f4724081A";
-const UNI_ROUTER = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
-const USDT_ADDR = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
-const USDC_ADDR = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
 
 async function deployFixture() {
   const [owner, alice] = await ethers.getSigners();
 
-  await impersonateAccount(USDT_WHALE);
-  const whale = await ethers.getSigner(USDT_WHALE);
+  await impersonateAccount(WETH_WAHLE);
+  const whale = await ethers.getSigner(WETH_WAHLE);
 
-  const usdt = IERC20__factory.connect(USDT_ADDR, owner);
-  const usdc = IERC20__factory.connect(USDC_ADDR, owner);
+  const weth = IERC20__factory.connect(WETH, owner);
+  const token = IERC20__factory.connect(tokens[0], owner);
   const router = IRouter__factory.connect(UNI_ROUTER, owner);
 
-  return { owner, alice, usdc, usdt, router, whale };
+  return { owner, alice, weth, token, router, whale };
 }
 
 // hh node
-// rm -rf test/testOriginUniswap/__* && hh test test/testOriginUniswap/testUni.test.ts --network localhost
+// rm -rf test/__* && hh test test/testUni.test.ts --network localhost
 describe("", () => {
   let owner: SignerWithAddress;
   let alice: SignerWithAddress;
   let whale: SignerWithAddress;
 
-  let usdc: IERC20;
-  let usdt: IERC20;
+  let weth: IERC20;
+  let token: IERC20;
   let router: IRouter;
 
   beforeEach(async () => {
-    ({ owner, alice, usdc, usdt, router, whale } = await loadFixture(
+    ({ owner, alice, token, weth, router, whale } = await loadFixture(
       deployFixture
     ));
   });
 
-  it("swap usdt -> usdc", async () => {
-    await usdt
-      .connect(whale)
-      .transfer(owner.address, ethers.BigNumber.from(100).mul(10 ** 6));
+  xit("swap usdt -> usdc", async () => {
+    await weth.connect(whale).transfer(owner.address, parseEther("0.1"));
 
-    const amountsOut = await router.getAmountsOut(
-      ethers.BigNumber.from(100).mul(10 ** 6),
-      [USDT_ADDR, USDC_ADDR]
-    );
+    const amountsOut = await router.getAmountsOut(parseEther("0.1"), [
+      WETH,
+      token.address,
+    ]);
 
-    await usdt
-      .connect(owner)
-      .approve(UNI_ROUTER, ethers.BigNumber.from(100).mul(10 ** 6));
+    await weth.connect(owner).approve(UNI_ROUTER, parseEther("0.1"));
 
     await expect(async () =>
       router
         .connect(owner)
         .swapExactTokensForTokens(
-          ethers.BigNumber.from(100).mul(10 ** 6),
+          parseEther("0.1"),
           0,
-          [USDT_ADDR, USDC_ADDR],
+          [weth.address, token.address],
           alice.address,
           (await time.latest()) + 1200
         )
-    ).to.changeTokenBalance(usdc, alice, amountsOut[1]);
+    ).to.changeTokenBalance(token, alice, amountsOut[1]);
   });
 
   it("swap gas", async () => {
     await snapshotGasCost(
-      usdt.connect(owner).approve(UNI_ROUTER, constants.MaxUint256)
+      weth.connect(owner).approve(UNI_ROUTER, constants.MaxUint256)
     );
+    await weth.connect(whale).transfer(owner.address, 1);
 
-    await snapshotGasCost(
-      usdt
-        .connect(whale)
-        .transfer(owner.address, ethers.BigNumber.from(100).mul(10 ** 6))
-    );
+    for (let i = 0; i < tokens.length; i++) {
+      const token = IERC20Metadata__factory.connect(tokens[i], owner);
+      const wethMeta = IERC20Metadata__factory.connect(WETH, owner);
 
-    await snapshotGasCost(
-      router
-        .connect(owner)
-        .swapExactTokensForTokens(
-          ethers.BigNumber.from(100).mul(10 ** 6),
-          0,
-          [USDT_ADDR, USDC_ADDR],
-          alice.address,
-          (await time.latest()) + 1200
-        )
-    );
+      console.log(`Pair: ${await wethMeta.name()} - ${await token.name()}`);
+      console.log(
+        `Pair: ${await wethMeta.symbol()} - ${await token.symbol()}\n`
+      );
 
-    await snapshotGasCost(
-      usdt
-        .connect(whale)
-        .transfer(owner.address, ethers.BigNumber.from(100).mul(10 ** 6))
-    );
+      await snapshotGasCost(
+        weth.connect(whale).transfer(owner.address, parseEther("0.1"))
+      );
 
-    await snapshotGasCost(
-      router
-        .connect(owner)
-        .swapExactTokensForTokens(
-          ethers.BigNumber.from(100).mul(10 ** 6),
-          0,
-          [USDT_ADDR, USDC_ADDR],
-          alice.address,
-          (await time.latest()) + 1200
-        )
-    );
-  });
+      await snapshotGasCost(
+        router
+          .connect(owner)
+          .swapExactTokensForTokens(
+            parseEther("0.1"),
+            0,
+            [WETH, tokens[i]],
+            alice.address,
+            (await time.latest()) + 1200
+          )
+      );
+
+      await snapshotGasCost(
+        weth.connect(whale).transfer(owner.address, parseEther("0.1"))
+      );
+
+      await snapshotGasCost(
+        router
+          .connect(owner)
+          .swapExactTokensForTokens(
+            parseEther("0.1"),
+            0,
+            [WETH, tokens[i]],
+            alice.address,
+            (await time.latest()) + 1200
+          )
+      );
+    }
+  }).timeout(2000000);
 });
