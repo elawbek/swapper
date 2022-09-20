@@ -1,3 +1,15 @@
+// Compile:
+// solc --strict-assembly --optimize --optimize-runs 1000 Swapper.yul
+
+// the contract is incapable of receiving ethers => it is safe to use the callvalue() opcode instead of push1 0x00
+// push1 0x00 cost 3 gas, callvalue() always return 0x00 and cost 2 gas, so use it to save gas
+
+// returndatasize() same,
+// but returndatasize() may return non-zero while a swap or withdraw function is running,
+// so it is only used when checking for value in a transaction
+
+// When deployment, you must never send ethers to transactions!
+
 object "Swapper" {
   code {
     codecopy(
