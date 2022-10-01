@@ -1,5 +1,5 @@
 // Compile:
-// solc --strict-assembly --optimize --optimize-runs 1000 Swapper.yul
+// solc --strict-assembly --bin --optimize --optimize-runs 1000 contracts/Swapper.yul
 
 // the contract is incapable of receiving ethers => it is safe to use the callvalue() opcode instead of push1 0x00
 // push1 0x00 cost 3 gas, callvalue() always return 0x00 and cost 2 gas, so use it to save gas
